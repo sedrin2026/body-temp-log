@@ -62,54 +62,29 @@
       display: block;
     }
 
-    /* 体温タップボタン群 */
-    .temp-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .temp-btn {
-      background: #faf6f5;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      color: var(--text-main);
-      padding: 10px 0;
-      font-size: 0.95rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .temp-btn:active {
-      background: var(--primary);
-      color: #fff;
-      transform: scale(0.95);
-    }
-
     /* スライダーエリア */
     .slider-box {
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
+      padding: 16px;
       text-align: center;
     }
     .slider-display {
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: bold;
       color: var(--primary);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
-      margin-bottom: 10px;
+      margin-bottom: 16px;
       cursor: pointer;
     }
     .slider-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
     .btn-main {
       flex: 2;
@@ -117,8 +92,8 @@
       color: white;
       border: none;
       border-radius: 14px;
-      padding: 10px;
-      font-size: 0.95rem;
+      padding: 12px;
+      font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(232, 138, 145, 0.2);
@@ -129,15 +104,14 @@
       color: #555;
       border: none;
       border-radius: 14px;
-      padding: 10px;
+      padding: 12px;
       font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
     }
 
-    /* 過去日時追加アコーディオン or フォーム */
+    /* 過去日時追加フォーム */
     .past-form-group {
-      margin-top: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -146,7 +120,7 @@
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       font-size: 0.9rem;
       color: var(--text-main);
       width: 100%;
@@ -157,10 +131,11 @@
       color: var(--text-main);
       border: none;
       border-radius: 12px;
-      padding: 8px;
+      padding: 10px;
       font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 4px;
     }
 
     /* 履歴と削除 */
@@ -210,34 +185,20 @@
       <div class="sub-title">スマート体温管理</div>
     </header>
 
-    <!-- ①②④ ワンタップ＆スライダー選択エリア -->
+    <!-- スライダー選択エリア -->
     <div class="card">
-      <span class="section-title">体温を選択して記録</span>
-      
-      <!-- よく使うボタン -->
-      <div class="temp-grid">
-        <button class="temp-btn" onclick="quickRecord(36.2)">36.2°</button>
-        <button class="temp-btn" onclick="quickRecord(36.4)">36.4°</button>
-        <button class="temp-btn" onclick="quickRecord(36.5)">36.5°</button>
-        <button class="temp-btn" onclick="quickRecord(36.6)">36.6°</button>
-        <button class="temp-btn" onclick="quickRecord(36.7)">36.7°</button>
-        <button class="temp-btn" onclick="quickRecord(36.8)">36.8°</button>
-        <button class="temp-btn" onclick="quickRecord(37.0)">37.0°</button>
-        <button class="temp-btn" onclick="quickRecord(37.5)">37.5°</button>
-      </div>
-
-      <!-- スライダー選択 -->
+      <span class="section-title">体温をスライドして記録</span>
       <div class="slider-box">
         <div id="sliderDisplay" class="slider-display">36.5°C</div>
         <input type="range" id="tempSlider" min="34.0" max="42.0" step="0.1" value="36.5" oninput="updateSliderText(this.value)">
         <div class="slider-actions">
-          <button class="btn-clear" onclick="resetSlider()">クリア</button>
+          <button class="btn-clear" onclick="clearInput()">クリア</button>
           <button class="btn-main" onclick="recordSlider()">この体温で記録</button>
         </div>
       </div>
     </div>
 
-    <!-- ③ 過去の記録を追加するエリア -->
+    <!-- 過去の記録を追加するエリア -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -265,7 +226,7 @@
   <script>
     let tempChart = null;
 
-    // 初期化時に過去日時フォームに現在日時をセットしておく
+    // 初期化時に過去日時フォームに現在日時をセット
     function initPastDateTime() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -277,25 +238,22 @@
       document.getElementById('sliderDisplay').innerText = parseFloat(val).toFixed(1) + '°C';
     }
 
-    // ①② 誤入力クリア（36.5度にリセット）
-    function resetSlider() {
+    // 入力クリアボタン：現在操作・入力中のスライダー数値を初期値に戻す
+    function clearInput() {
       const slider = document.getElementById('tempSlider');
       slider.value = 36.5;
       updateSliderText(36.5);
     }
 
-    // ①④ ワンタップ即時記録（現在日時）
-    function quickRecord(temp) {
-      saveData(temp, new Date().toISOString());
-    }
-
-    // ①④ スライダーからの記録（現在日時）
+    // スライダーからの記録（現在日時）
     function recordSlider() {
       const temp = document.getElementById('tempSlider').value;
       saveData(temp, new Date().toISOString());
+      // 記録したらスライダーをデフォルト位置に戻す
+      clearInput();
     }
 
-    // ③ 過去日時を指定しての記録
+    // 過去日時を指定しての記録
     function recordPastData() {
       const dateTimeVal = document.getElementById('pastDateTime').value;
       const tempVal = document.getElementById('pastTemp').value;
@@ -305,11 +263,10 @@
         return;
       }
 
-      // フォームに入力された日時をUTC/ISO形式に変換
       const isoTime = new Date(dateTimeVal).toISOString();
       saveData(tempVal, isoTime);
 
-      // 体温欄だけクリア
+      // 過去データの体温入力欄だけクリア
       document.getElementById('pastTemp').value = '';
     }
 
@@ -322,14 +279,14 @@
         temp: parseFloat(temp).toFixed(1)
       });
 
-      // 日時の新しい順に並び替えを維持
+      // 日時の新しい順に並び替え
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
 
       localStorage.setItem('body_temp_data', JSON.stringify(records));
       updateUI();
     }
 
-    // 削除処理
+    // 個別削除処理
     function deleteRecord(index) {
       if (!confirm('この記録を消してもよろしいですか？')) return;
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
@@ -371,7 +328,6 @@
     function renderChart(records) {
       const ctx = document.getElementById('tempChart').getContext('2d');
       
-      // 時系列順（古い順）に並べ替え
       const sorted = [...records].reverse();
       const labels = sorted.map(r => {
         const d = new Date(r.time);
