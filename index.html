@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUKINO HEALTH LOG 🧸</title>
+  <title>YUKINO HEALTH LOG 🦔</title>
   <meta name="theme-color" content="#fff8f6">
   <!-- グラフ描画ライブラリ (Chart.js) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,6 +33,11 @@
     header {
       text-align: center;
       margin-bottom: 20px;
+    }
+    .header-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 4px;
+      display: inline-block;
     }
     h1 {
       font-size: 1.3rem;
@@ -181,7 +186,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>YUKINO HEALTH LOG 🧸</h1>
+      <div class="header-emoji">🦔</div>
+      <h1>YUKINO HEALTH LOG 🦔</h1>
       <div class="sub-title">スマート体温管理</div>
     </header>
 
@@ -238,7 +244,7 @@
       document.getElementById('sliderDisplay').innerText = parseFloat(val).toFixed(1) + '°C';
     }
 
-    // クリアボタン：直近（一番新しい）の記録を1件削除してグラフ・履歴に即時反映
+    // クリアボタン：直近（一番新しい）の記録を1件削除
     function clearLastRecord() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       if (records.length === 0) {
@@ -246,10 +252,9 @@
         return;
       }
       
-      // 一番新しい（先頭の）記録を削除
       records.shift();
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI();
+      updateUI(); // 自動更新実行
     }
 
     // スライダーからの記録（現在日時）
@@ -274,7 +279,7 @@
       document.getElementById('pastTemp').value = '';
     }
 
-    // 共通のデータ保存処理
+    // 共通のデータ保存処理（即時更新呼出）
     function saveData(temp, isoTimeString) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       
@@ -283,11 +288,10 @@
         temp: parseFloat(temp).toFixed(1)
       });
 
-      // 日時の新しい順に並び替え
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
 
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI();
+      updateUI(); // 自動更新実行
     }
 
     // 個別削除処理
@@ -296,14 +300,13 @@
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       records.splice(index, 1);
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI();
+      updateUI(); // 自動更新実行
     }
 
-    // UI & グラフの更新
+    // UI & グラフの自動リアルタイム更新
     function updateUI() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       
-      // 履歴一覧の更新
       const container = document.getElementById('historyList');
       if (records.length === 0) {
         container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
@@ -324,7 +327,6 @@
         }).join('');
       }
 
-      // グラフの更新処理
       renderChart(records);
     }
 
@@ -378,6 +380,13 @@
         }
       });
     }
+
+    // データの変更検知（自動更新イベントListener）
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'body_temp_data') {
+        updateUI();
+      }
+    });
 
     // 初期起動
     initPastDateTime();
