@@ -20,7 +20,7 @@
     }
     body {
       margin: 0;
-      padding: 20px 16px;
+      padding: 20px 16px 40px;
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -219,6 +219,132 @@
       width: 100%;
       height: 200px;
     }
+
+    /* カレンダーエリア */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .calendar-month {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1rem;
+    }
+    .cal-nav-btn {
+      background: #faf6f5;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+    .cal-day-label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      padding-bottom: 6px;
+      font-weight: bold;
+    }
+    .cal-cell {
+      background: #faf6f5;
+      border-radius: 10px;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      position: relative;
+      border: 1px solid transparent;
+    }
+    .cal-cell.empty {
+      background: transparent;
+      cursor: default;
+    }
+    .cal-cell.today {
+      border-color: var(--primary);
+      font-weight: bold;
+      background: #fff0f1;
+    }
+    .cal-poop {
+      font-size: 1.1rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    /* 下部スライドモーダル */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: #ffffff;
+      width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 32px;
+      box-sizing: border-box;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    .modal-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+    .poop-options {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .poop-btn {
+      background: #faf6f5;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 20px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .poop-btn:active {
+      transform: scale(0.95);
+      background: #f2e3df;
+    }
+    .btn-close {
+      background: #e0d5d2;
+      color: #555;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 24px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -275,10 +401,35 @@
       </div>
       <div id="memoList"></div>
     </div>
+
+    <!-- カレンダー（お通じ記録） -->
+    <div class="card">
+      <span class="section-title">お通じカレンダー 💩</span>
+      <div class="calendar-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前月</button>
+        <div id="calendarTitle" class="calendar-month">2026年 5月</div>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">翌月 ＞</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+  </div>
+
+  <!-- 下から出るモーダル（💩選択） -->
+  <div class="modal-overlay" id="poopModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title" id="modalDateTitle">5月15日の記録</div>
+      <div class="poop-options">
+        <button class="poop-btn" onclick="setPoop(true)">💩</button>
+        <button class="poop-btn" style="font-size:1rem; padding:16px;" onclick="setPoop(false)">なし</button>
+      </div>
+      <button class="btn-close" onclick="closeModal()">閉じる</button>
+    </div>
   </div>
 
   <script>
     let tempChart = null;
+    let currentCalDate = new Date();
+    let selectedDateStr = "";
 
     // サービスワーカー（オフライン対応）の登録
     if ('serviceWorker' in navigator) {
@@ -308,13 +459,12 @@
         alert('削除できる記録がありません。');
         return;
       }
-      
       records.shift();
       localStorage.setItem('body_temp_data', JSON.stringify(records));
       updateUI();
     }
 
-    // スライダーからの記録（現在日時）
+    // スライダーからの記録
     function recordSlider() {
       const temp = document.getElementById('tempSlider').value;
       saveData(temp, new Date().toISOString());
@@ -324,29 +474,23 @@
     function recordPastData() {
       const dateTimeVal = document.getElementById('pastDateTime').value;
       const tempVal = document.getElementById('pastTemp').value;
-
       if (!dateTimeVal || !tempVal) {
         alert('日時と体温の両方を入力してくださいね。');
         return;
       }
-
       const isoTime = new Date(dateTimeVal).toISOString();
       saveData(tempVal, isoTime);
-
       document.getElementById('pastTemp').value = '';
     }
 
     // 共通のデータ保存処理
     function saveData(temp, isoTimeString) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
-      
       records.unshift({
         time: isoTimeString,
         temp: parseFloat(temp).toFixed(1)
       });
-
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
-
       localStorage.setItem('body_temp_data', JSON.stringify(records));
       updateUI();
     }
@@ -365,13 +509,11 @@
       const input = document.getElementById('memoText');
       const text = input.value.trim();
       if (!text) return;
-
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       memos.unshift({
         time: new Date().toISOString(),
         text: text
       });
-
       localStorage.setItem('body_temp_memos', JSON.stringify(memos));
       input.value = '';
       updateUI();
@@ -386,12 +528,76 @@
       updateUI();
     }
 
+    // カレンダー描画
+    function renderCalendar() {
+      const year = currentCalDate.getFullYear();
+      const month = currentCalDate.getMonth();
+      document.getElementById('calendarTitle').innerText = `${year}年 ${month + 1}月`;
+
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+
+      const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
+      dayLabels.forEach(d => {
+        grid.innerHTML += `<div class="cal-day-label">${d}</div>`;
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const today = new Date();
+
+      for (let i = 0; i < firstDay; i++) {
+        grid.innerHTML += `<div class="cal-cell empty"></div>`;
+      }
+
+      for (let date = 1; date <= lastDate; date++) {
+        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === date;
+        const hasPoop = poopData[dateKey];
+
+        grid.innerHTML += `
+          <div class="cal-cell ${isToday ? 'today' : ''}" onclick="openPoopModal('${dateKey}', ${month + 1}, ${date})">
+            <span>${date}</span>
+            <span class="cal-poop">${hasPoop ? '💩' : ''}</span>
+          </div>
+        `;
+      }
+    }
+
+    function changeMonth(diff) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + diff);
+      renderCalendar();
+    }
+
+    function openPoopModal(dateKey, m, d) {
+      selectedDateStr = dateKey;
+      document.getElementById('modalDateTitle').innerText = `${m}月${d}日の記録`;
+      document.getElementById('poopModal').classList.add('active');
+    }
+
+    function closeModal(e) {
+      document.getElementById('poopModal').classList.remove('active');
+    }
+
+    function setPoop(hasPoop) {
+      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      if (hasPoop) {
+        poopData[selectedDateStr] = true;
+      } else {
+        delete poopData[selectedDateStr];
+      }
+      localStorage.setItem('body_temp_poop', JSON.stringify(poopData));
+      closeModal();
+      renderCalendar();
+    }
+
     // UI & グラフの更新
     function updateUI() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       
-      // 履歴一覧の更新
+      // 履歴一覧
       const container = document.getElementById('historyList');
       if (records.length === 0) {
         container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
@@ -412,7 +618,7 @@
         }).join('');
       }
 
-      // メモ一覧の更新
+      // メモ一覧
       const memoContainer = document.getElementById('memoList');
       if (memos.length === 0) {
         memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">メモはありません</div>';
@@ -433,6 +639,7 @@
       }
 
       renderChart(records);
+      renderCalendar();
     }
 
     // エスケープ処理
@@ -445,7 +652,6 @@
     // Chart.js 描画
     function renderChart(records) {
       const ctx = document.getElementById('tempChart').getContext('2d');
-      
       const sorted = [...records].reverse();
       const labels = sorted.map(r => {
         const d = new Date(r.time);
@@ -495,7 +701,7 @@
 
     // データの変更検知
     window.addEventListener('storage', function(e) {
-      if (e.key === 'body_temp_data' || e.key === 'body_temp_memos') {
+      if (e.key === 'body_temp_data' || e.key === 'body_temp_memos' || e.key === 'body_temp_poop') {
         updateUI();
       }
     });
