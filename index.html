@@ -1,1 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体温記録 - Thermo Log</title>
+  <meta name="theme-color" content="#121212">
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --accent: #00e5ff;
+      --danger: #ff5252;
+      --text: #e0e0e0;
+      --text-dim: #a0a0a0;
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #333;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    input, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #fff;
+      padding: 12px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    input[type="number"] {
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    button.btn-submit {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      padding: 14px;
+      margin-bottom: 0;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .temp-val {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    .temp-val.high {
+      color: var(--danger);
+    }
+    .time-val {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+    .memo-val {
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #666;
+      width: auto;
+      padding: 4px 8px;
+      margin: 0;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>THERMO LOG</h1>
 
+    <!-- 入力フォーム -->
+    <div class="card">
+      <label for="dateTime">日時</label>
+      <input type="datetime-local" id="dateTime">
+
+      <label for="temperature">体温 (°C)</label>
+      <input type="number" id="temperature" step="0.1" min="34" max="42" placeholder="36.5">
+
+      <label for="memo">メモ</label>
+      <input type="text" id="memo" placeholder="例：朝、平熱、頭痛あり">
+
+      <button class="btn-submit" onclick="saveRecord()">記録を保存</button>
+    </div>
+
+    <!-- 履歴一覧 -->
+    <div class="card">
+      <label>過去の記録</label>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <script>
+    // 初期表示：現在日時をセット
+    function setNowDateTime() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('dateTime').value = now.toISOString().slice(0, 16);
+    }
+
+    // データ読み込みと表示
+    function loadRecords() {
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      const container = document.getElementById('historyList');
+      
+      if (records.length === 0) {
+        container.innerHTML = '<div style="color:#666; text-align:center; padding:10px;">記録がありません</div>';
+        return;
+      }
+
+      container.innerHTML = records.map((item, index) => {
+        const isHigh = parseFloat(item.temp) >= 37.5;
+        const dateStr = new Date(item.time).toLocaleString('ja-JP', {
+          month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        
+        return `
+          <div class="history-item">
+            <div>
+              <div class="time-val">${dateStr}</div>
+              <div class="memo-val">${item.memo || ''}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="temp-val ${isHigh ? 'high' : ''}">${item.temp}°C</span>
+              <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 保存処理
+    function saveRecord() {
+      const time = document.getElementById('dateTime').value;
+      const temp = document.getElementById('temperature').value;
+      const memo = document.getElementById('memo').value;
+
+      if (!temp) {
+        alert('体温を入力してください。');
+        return;
+      }
+
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      records.unshift({ time, temp, memo });
+      localStorage.setItem('body_temp_data', JSON.stringify(records));
+
+      // 入力クリアと再表示
+      document.getElementById('temperature').value = '';
+      document.getElementById('memo').value = '';
+      setNowDateTime();
+      loadRecords();
+    }
+
+    // 削除処理
+    function deleteRecord(index) {
+      if (!confirm('この記録を削除しますか？')) return;
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      records.splice(index, 1);
+      localStorage.setItem('body_temp_data', JSON.stringify(records));
+      loadRecords();
+    }
+
+    // 起動時処理
+    setNowDateTime();
+    loadRecords();
+  </script>
+</body>
+</html>
