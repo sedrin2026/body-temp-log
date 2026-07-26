@@ -1,0 +1,16 @@
+{
+  "name": "YUKINO HEALTH LOG",
+  "short_name": "体温ログ🦔",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff8f6",
+  "theme_color": "#fff8f6",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
