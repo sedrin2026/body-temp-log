@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>体温ノート - Thermo Log</title>
+  <title>YUKINO HEALTH LOG 🧸</title>
   <meta name="theme-color" content="#fff8f6">
+  <!-- グラフ描画ライブラリ (Chart.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-color: #fff8f6;       /* やわらかい生成り・ピンク系背景 */
-      --card-bg: #ffffff;       /* カード背景 */
-      --primary: #e88a91;       /* 大人っぽいくすみピンク */
+      --bg-color: #fff8f6;
+      --card-bg: #ffffff;
+      --primary: #e88a91;
       --primary-hover: #d7777e;
-      --accent-fever: #e76f51;   /* 発熱時のアクセント */
-      --text-main: #4a403a;      /* 優しいダークブラウン（黒より柔らかい） */
-      --text-sub: #8c7e75;       /* サブテキスト */
-      --border-color: #f2e3df;  /* 繊細なボーダー色 */
+      --accent-fever: #e76f51;
+      --text-main: #4a403a;
+      --text-sub: #8c7e75;
+      --border-color: #f2e3df;
     }
     body {
       margin: 0;
       padding: 20px 16px;
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", MeiRyo, sans-serif;
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
       -webkit-tap-highlight-color: transparent;
@@ -30,7 +32,7 @@
     }
     header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     h1 {
       font-size: 1.3rem;
@@ -47,79 +49,94 @@
     .card {
       background: var(--card-bg);
       border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
       box-shadow: 0 8px 20px rgba(232, 138, 145, 0.08);
       border: 1px solid var(--border-color);
     }
-    label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-sub);
-      margin-bottom: 8px;
-    }
-    input, textarea {
-      width: 100%;
-      box-sizing: border-box;
-      background: #faf6f5;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      color: var(--text-main);
-      padding: 12px 14px;
-      font-size: 0.95rem;
-      margin-bottom: 16px;
-      outline: none;
-      transition: border 0.2s;
-    }
-    input:focus {
-      border-color: var(--primary);
-    }
-    input[type="number"] {
-      font-size: 1.8rem;
-      text-align: center;
-      font-weight: bold;
-      color: var(--primary);
-      letter-spacing: 1px;
-    }
-    button.btn-submit {
-      width: 100%;
-      background: var(--primary);
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 25px;
-      padding: 14px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(238, 138, 145, 0.3);
-      transition: background 0.2s, transform 0.1s;
-    }
-    button.btn-submit:active {
-      transform: scale(0.98);
-      background: var(--primary-hover);
-    }
-    .history-header {
+    .section-title {
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-sub);
       margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: block;
     }
+
+    /* 体温タップボタン群 */
+    .temp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .temp-btn {
+      background: #faf6f5;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .temp-btn:active {
+      background: var(--primary);
+      color: #fff;
+      transform: scale(0.95);
+    }
+
+    /* カスタム微調整カウンター */
+    .custom-counter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #faf6f5;
+      border-radius: 14px;
+      padding: 6px 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .counter-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .counter-val {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .btn-record-custom {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 履歴と削除 */
     .history-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px dotted var(--border-color);
     }
     .history-item:last-child {
       border-bottom: none;
     }
     .temp-val {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: var(--primary);
     }
@@ -130,11 +147,6 @@
       font-size: 0.8rem;
       color: var(--text-sub);
     }
-    .memo-val {
-      font-size: 0.85rem;
-      color: var(--text-main);
-      margin-top: 3px;
-    }
     .delete-btn {
       background: transparent;
       border: none;
@@ -143,100 +155,92 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
-    .delete-btn:hover {
-      color: var(--accent-fever);
+
+    /* グラフ用キャンバス */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>THERMO LOG</h1>
-      <div class="sub-title">毎日のからだの記録</div>
+      <h1>YUKINO HEALTH LOG 🧸</h1>
+      <div class="sub-title">タップするだけで自動記録</div>
     </header>
 
-    <!-- 入力フォーム -->
+    <!-- ワンタップ選択 -->
     <div class="card">
-      <label for="dateTime">日時</label>
-      <input type="datetime-local" id="dateTime">
+      <span class="section-title">体温を選択（タップで即記録）</span>
+      <div class="temp-grid">
+        <button class="temp-btn" onclick="quickRecord(36.2)">36.2°</button>
+        <button class="temp-btn" onclick="quickRecord(36.4)">36.4°</button>
+        <button class="temp-btn" onclick="quickRecord(36.5)">36.5°</button>
+        <button class="temp-btn" onclick="quickRecord(36.6)">36.6°</button>
+        <button class="temp-btn" onclick="quickRecord(36.7)">36.7°</button>
+        <button class="temp-btn" onclick="quickRecord(36.8)">36.8°</button>
+        <button class="temp-btn" onclick="quickRecord(37.0)">37.0°</button>
+        <button class="temp-btn" onclick="quickRecord(37.5)">37.5°</button>
+      </div>
 
-      <label for="temperature">体温 (°C)</label>
-      <input type="number" id="temperature" step="0.1" min="34" max="42" placeholder="36.5">
+      <!-- 細かい調整用 -->
+      <div class="custom-counter">
+        <span style="font-size:0.8rem; color:var(--text-sub);">微調整:</span>
+        <button class="counter-btn" onclick="adjustCustom(-0.1)">-</button>
+        <span id="customVal" class="counter-val">36.5</span>
+        <button class="counter-btn" onclick="adjustCustom(0.1)">+</button>
+        <button class="btn-record-custom" onclick="recordCustom()">記録</button>
+      </div>
+    </div>
 
-      <label for="memo">メモ</label>
-      <input type="text" id="memo" placeholder="例：朝、平熱、頭痛あり、生理1日目">
-
-      <button class="btn-submit" onclick="saveRecord()">きろくする</button>
+    <!-- グラフ表示 -->
+    <div class="card">
+      <span class="section-title">体温グラフ</span>
+      <div class="chart-container">
+        <canvas id="tempChart"></canvas>
+      </div>
     </div>
 
     <!-- 履歴一覧 -->
     <div class="card">
-      <div class="history-header">
-        <span>これまでの記録</span>
-      </div>
+      <span class="section-title">これまでの記録</span>
       <div id="historyList"></div>
     </div>
   </div>
 
   <script>
-    // 初期表示：現在日時をセット
-    function setNowDateTime() {
+    let currentCustom = 36.5;
+    let tempChart = null;
+
+    // 即時記録（タップされた現在日時で保存）
+    function quickRecord(temp) {
+      saveData(temp);
+    }
+
+    // 微調整用コントロール
+    function adjustCustom(delta) {
+      currentCustom = Math.round((currentCustom + delta) * 10) / 10;
+      document.getElementById('customVal').innerText = currentCustom.toFixed(1);
+    }
+
+    function recordCustom() {
+      saveData(currentCustom);
+    }
+
+    // データ保存
+    function saveData(temp) {
       const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      document.getElementById('dateTime').value = now.toISOString().slice(0, 16);
-    }
-
-    // データ読み込みと表示
-    function loadRecords() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
-      const container = document.getElementById('historyList');
       
-      if (records.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:16px; font-size:0.85rem;">まだ記録はありません</div>';
-        return;
-      }
+      records.unshift({
+        time: now.toISOString(),
+        temp: parseFloat(temp).toFixed(1)
+      });
 
-      container.innerHTML = records.map((item, index) => {
-        const isFever = parseFloat(item.temp) >= 37.5;
-        const dateStr = new Date(item.time).toLocaleString('ja-JP', {
-          month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-        
-        return `
-          <div class="history-item">
-            <div>
-              <div class="time-val">${dateStr}</div>
-              <div class="memo-val">${item.memo || ''}</div>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span class="temp-val ${isFever ? 'fever' : ''}">${item.temp}<span style="font-size:0.8rem; margin-left:2px;">°C</span></span>
-              <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // 保存処理
-    function saveRecord() {
-      const time = document.getElementById('dateTime').value;
-      const temp = document.getElementById('temperature').value;
-      const memo = document.getElementById('memo').value;
-
-      if (!temp) {
-        alert('体温を入力してくださいね。');
-        return;
-      }
-
-      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
-      records.unshift({ time, temp, memo });
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-
-      // 入力クリアと再表示
-      document.getElementById('temperature').value = '';
-      document.getElementById('memo').value = '';
-      setNowDateTime();
-      loadRecords();
+      updateUI();
     }
 
     // 削除処理
@@ -245,12 +249,93 @@
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       records.splice(index, 1);
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      loadRecords();
+      updateUI();
     }
 
-    // 起動時処理
-    setNowDateTime();
-    loadRecords();
+    // UI & グラフの更新
+    function updateUI() {
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      
+      // 履歴一覧の更新
+      const container = document.getElementById('historyList');
+      if (records.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
+      } else {
+        container.innerHTML = records.map((item, index) => {
+          const isFever = parseFloat(item.temp) >= 37.5;
+          const dateStr = new Date(item.time).toLocaleString('ja-JP', {
+            month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          return `
+            <div class="history-item">
+              <span class="time-val">${dateStr}</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="temp-val ${isFever ? 'fever' : ''}">${item.temp}°C</span>
+                <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // グラフの更新処理
+      renderChart(records);
+    }
+
+    // Chart.js 描画
+    function renderChart(records) {
+      const ctx = document.getElementById('tempChart').getContext('2d');
+      
+      // 時系列順（古い順）に並べ替え
+      const sorted = [...records].reverse();
+      const labels = sorted.map(r => {
+        const d = new Date(r.time);
+        return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+      });
+      const dataValues = sorted.map(r => r.temp);
+
+      if (tempChart) {
+        tempChart.destroy(); // 既存グラフの破棄
+      }
+
+      tempChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '体温 (°C)',
+            data: dataValues,
+            borderColor: '#e88a91',
+            backgroundColor: 'rgba(232, 138, 145, 0.15)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: '#e88a91',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 35.0,
+              max: 38.5,
+              ticks: { stepSize: 0.5 }
+            },
+            x: {
+              ticks: { font: { size: 9 } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // 初期起動
+    updateUI();
   </script>
 </body>
 </html>
