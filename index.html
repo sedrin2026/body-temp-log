@@ -192,7 +192,7 @@
         <div id="sliderDisplay" class="slider-display">36.5°C</div>
         <input type="range" id="tempSlider" min="34.0" max="42.0" step="0.1" value="36.5" oninput="updateSliderText(this.value)">
         <div class="slider-actions">
-          <button class="btn-clear" onclick="clearInput()">クリア</button>
+          <button class="btn-clear" onclick="clearLastRecord()">クリア</button>
           <button class="btn-main" onclick="recordSlider()">この体温で記録</button>
         </div>
       </div>
@@ -238,19 +238,24 @@
       document.getElementById('sliderDisplay').innerText = parseFloat(val).toFixed(1) + '°C';
     }
 
-    // 入力クリアボタン：現在操作・入力中のスライダー数値を初期値に戻す
-    function clearInput() {
-      const slider = document.getElementById('tempSlider');
-      slider.value = 36.5;
-      updateSliderText(36.5);
+    // クリアボタン：直近（一番新しい）の記録を1件削除してグラフ・履歴に即時反映
+    function clearLastRecord() {
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      if (records.length === 0) {
+        alert('削除できる記録がありません。');
+        return;
+      }
+      
+      // 一番新しい（先頭の）記録を削除
+      records.shift();
+      localStorage.setItem('body_temp_data', JSON.stringify(records));
+      updateUI();
     }
 
     // スライダーからの記録（現在日時）
     function recordSlider() {
       const temp = document.getElementById('tempSlider').value;
       saveData(temp, new Date().toISOString());
-      // 記録したらスライダーをデフォルト位置に戻す
-      clearInput();
     }
 
     // 過去日時を指定しての記録
@@ -266,7 +271,6 @@
       const isoTime = new Date(dateTimeVal).toISOString();
       saveData(tempVal, isoTime);
 
-      // 過去データの体温入力欄だけクリア
       document.getElementById('pastTemp').value = '';
     }
 
