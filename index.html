@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YUKINO HEALTH LOG 🦔</title>
+  <title>YUKINO HEALTH LOG</title>
   <meta name="theme-color" content="#fff8f6">
   <!-- グラフ描画ライブラリ (Chart.js) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -175,6 +175,44 @@
       cursor: pointer;
     }
 
+    /* メモ入力エリア */
+    .memo-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .memo-input {
+      flex: 1;
+      background: #faf6f5;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      box-sizing: border-box;
+    }
+    .memo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px dotted var(--border-color);
+    }
+    .memo-item:last-child {
+      border-bottom: none;
+    }
+    .memo-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    .memo-date {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
     /* グラフ用キャンバス */
     .chart-container {
       position: relative;
@@ -187,7 +225,7 @@
   <div class="container">
     <header>
       <div class="header-emoji">🦔</div>
-      <h1>YUKINO HEALTH LOG 🦔</h1>
+      <h1>YUKINO HEALTH LOG</h1>
       <div class="sub-title">スマート体温管理</div>
     </header>
 
@@ -227,10 +265,29 @@
       <span class="section-title">これまでの記録</span>
       <div id="historyList"></div>
     </div>
+
+    <!-- メモエリア -->
+    <div class="card">
+      <span class="section-title">メモ（体調や解熱剤など）</span>
+      <div class="memo-form">
+        <input type="text" id="memoText" class="memo-input" placeholder="例: 解熱剤を飲んだ、頭痛あり">
+        <button class="btn-sub" style="margin-top:0; padding:10px 16px;" onclick="addMemo()">残す</button>
+      </div>
+      <div id="memoList"></div>
+    </div>
   </div>
 
   <script>
     let tempChart = null;
+
+    // サービスワーカー（オフライン対応）の登録
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('ServiceWorker registered!', reg))
+          .catch(err => console.log('ServiceWorker error:', err));
+      });
+    }
 
     // 初期化時に過去日時フォームに現在日時をセット
     function initPastDateTime() {
@@ -254,7 +311,7 @@
       
       records.shift();
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI(); // 自動更新実行
+      updateUI();
     }
 
     // スライダーからの記録（現在日時）
@@ -279,7 +336,7 @@
       document.getElementById('pastTemp').value = '';
     }
 
-    // 共通のデータ保存処理（即時更新呼出）
+    // 共通のデータ保存処理
     function saveData(temp, isoTimeString) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       
@@ -291,7 +348,7 @@
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
 
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI(); // 自動更新実行
+      updateUI();
     }
 
     // 個別削除処理
@@ -300,13 +357,41 @@
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       records.splice(index, 1);
       localStorage.setItem('body_temp_data', JSON.stringify(records));
-      updateUI(); // 自動更新実行
+      updateUI();
     }
 
-    // UI & グラフの自動リアルタイム更新
+    // メモ追加
+    function addMemo() {
+      const input = document.getElementById('memoText');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
+      memos.unshift({
+        time: new Date().toISOString(),
+        text: text
+      });
+
+      localStorage.setItem('body_temp_memos', JSON.stringify(memos));
+      input.value = '';
+      updateUI();
+    }
+
+    // メモ削除
+    function deleteMemo(index) {
+      if (!confirm('このメモを消してもよろしいですか？')) return;
+      const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
+      memos.splice(index, 1);
+      localStorage.setItem('body_temp_memos', JSON.stringify(memos));
+      updateUI();
+    }
+
+    // UI & グラフの更新
     function updateUI() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
+      const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       
+      // 履歴一覧の更新
       const container = document.getElementById('historyList');
       if (records.length === 0) {
         container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
@@ -327,7 +412,34 @@
         }).join('');
       }
 
+      // メモ一覧の更新
+      const memoContainer = document.getElementById('memoList');
+      if (memos.length === 0) {
+        memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">メモはありません</div>';
+      } else {
+        memoContainer.innerHTML = memos.map((item, index) => {
+          const d = new Date(item.time);
+          const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          return `
+            <div class="memo-item">
+              <div>
+                <div class="memo-text">${escapeHtml(item.text)}</div>
+                <div class="memo-date">${dateStr}</div>
+              </div>
+              <button class="delete-btn" onclick="deleteMemo(${index})">✕</button>
+            </div>
+          `;
+        }).join('');
+      }
+
       renderChart(records);
+    }
+
+    // エスケープ処理
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
     }
 
     // Chart.js 描画
@@ -381,9 +493,9 @@
       });
     }
 
-    // データの変更検知（自動更新イベントListener）
+    // データの変更検知
     window.addEventListener('storage', function(e) {
-      if (e.key === 'body_temp_data') {
+      if (e.key === 'body_temp_data' || e.key === 'body_temp_memos') {
         updateUI();
       }
     });
