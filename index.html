@@ -123,6 +123,26 @@
       cursor: pointer;
     }
 
+    /* お天気選択ボタン */
+    .weather-picker {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 12px;
+    }
+    .weather-btn {
+      background: #faf6f5;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .weather-btn.selected {
+      border-color: var(--primary);
+      background: #fff0f1;
+    }
+
     /* 過去日時追加フォーム */
     .past-form-group {
       display: flex;
@@ -225,7 +245,13 @@
     .chart-container {
       position: relative;
       width: 100%;
-      height: 200px;
+      height: 220px;
+    }
+    .chart-legend-note {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      text-align: center;
+      margin-top: 8px;
     }
 
     /* カレンダーエリア */
@@ -264,7 +290,7 @@
     .cal-cell {
       background: #faf6f5;
       border-radius: 10px;
-      min-height: 52px;
+      min-height: 56px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -286,8 +312,10 @@
       font-weight: bold;
       background: #fff0f1;
     }
-    .cal-poop {
-      font-size: 0.9rem;
+    .cal-icons {
+      display: flex;
+      gap: 2px;
+      font-size: 0.75rem;
       line-height: 1;
       margin-top: 1px;
     }
@@ -385,6 +413,15 @@
       <div class="slider-box">
         <div id="sliderDisplay" class="slider-display">36.5°C</div>
         <input type="range" id="tempSlider" min="34.0" max="42.0" step="0.1" value="36.5" oninput="updateSliderText(this.value)">
+        
+        <!-- お天気選択 -->
+        <div class="weather-picker">
+          <button type="button" class="weather-btn selected" onclick="selectWeather('☀️', this)">☀️</button>
+          <button type="button" class="weather-btn" onclick="selectWeather('☁️', this)">☁️</button>
+          <button type="button" class="weather-btn" onclick="selectWeather('🌧️', this)">🌧️</button>
+          <button type="button" class="weather-btn" onclick="selectWeather('❄️', this)">❄️</button>
+        </div>
+
         <div class="slider-actions">
           <button class="btn-clear" onclick="clearLastRecord()">クリア</button>
           <button class="btn-main" onclick="recordSlider()">この体温で記録</button>
@@ -408,6 +445,7 @@
       <div class="chart-container">
         <canvas id="tempChart"></canvas>
       </div>
+      <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
     <!-- 履歴一覧 -->
@@ -426,7 +464,7 @@
       <div id="memoList"></div>
     </div>
 
-    <!-- カレンダー（お通じ＆メモ記録） -->
+    <!-- カレンダー（お天気＆お通じ＆メモ記録） -->
     <div class="card">
       <span class="section-title">ヘルスログカレンダー 📅</span>
       <div class="calendar-header">
@@ -454,6 +492,7 @@
     let tempChart = null;
     let currentCalDate = new Date();
     let selectedDateStr = "";
+    let selectedWeatherIcon = "☀️";
 
     // サービスワーカー（オフライン対応）の登録
     if ('serviceWorker' in navigator) {
@@ -476,6 +515,13 @@
       document.getElementById('sliderDisplay').innerText = parseFloat(val).toFixed(1) + '°C';
     }
 
+    // お天気選択
+    function selectWeather(weather, btn) {
+      selectedWeatherIcon = weather;
+      document.querySelectorAll('.weather-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
     // クリアボタン：直近（一番新しい）の記録を1件削除
     function clearLastRecord() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
@@ -491,7 +537,7 @@
     // スライダーからの記録
     function recordSlider() {
       const temp = document.getElementById('tempSlider').value;
-      saveData(temp, new Date().toISOString());
+      saveData(temp, new Date().toISOString(), selectedWeatherIcon);
     }
 
     // 過去日時を指定しての記録
@@ -503,16 +549,17 @@
         return;
       }
       const isoTime = new Date(dateTimeVal).toISOString();
-      saveData(tempVal, isoTime);
+      saveData(tempVal, isoTime, '☀️');
       document.getElementById('pastTemp').value = '';
     }
 
     // 共通のデータ保存処理
-    function saveData(temp, isoTimeString) {
+    function saveData(temp, isoTimeString, weather) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       records.unshift({
         time: isoTimeString,
-        temp: parseFloat(temp).toFixed(1)
+        temp: parseFloat(temp).toFixed(1),
+        weather: weather || '☀️'
       });
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
       localStorage.setItem('body_temp_data', JSON.stringify(records));
@@ -552,7 +599,7 @@
       updateUI();
     }
 
-    // カレンダー描画（メモ＆💩連動）
+    // カレンダー描画
     function renderCalendar() {
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
@@ -569,17 +616,21 @@
       const firstDay = new Date(year, month, 1).getDay();
       const lastDate = new Date(year, month + 1, 0).getDate();
       const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       const today = new Date();
 
-      // 日付ごとのメモをマッピング
+      const weatherMap = {};
       const memoMap = {};
+      records.forEach(r => {
+        const d = new Date(r.time);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        if (!weatherMap[key]) weatherMap[key] = r.weather;
+      });
       memos.forEach(m => {
         const d = new Date(m.time);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        if (!memoMap[key]) {
-          memoMap[key] = m.text;
-        }
+        if (!memoMap[key]) memoMap[key] = m.text;
       });
 
       for (let i = 0; i < firstDay; i++) {
@@ -590,12 +641,16 @@
         const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === date;
         const hasPoop = poopData[dateKey];
+        const dayWeather = weatherMap[dateKey] || '';
         const dayMemo = memoMap[dateKey] || '';
 
         grid.innerHTML += `
           <div class="cal-cell ${isToday ? 'today' : ''}" onclick="openPoopModal('${dateKey}', ${month + 1}, ${date})">
             <span>${date}</span>
-            ${hasPoop ? '<span class="cal-poop">💩</span>' : ''}
+            <div class="cal-icons">
+              ${dayWeather ? `<span>${dayWeather}</span>` : ''}
+              ${hasPoop ? '<span>💩</span>' : ''}
+            </div>
             ${dayMemo ? `<span class="cal-memo-text">${escapeHtml(dayMemo)}</span>` : ''}
           </div>
         `;
@@ -634,7 +689,6 @@
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       
-      // 履歴一覧
       const container = document.getElementById('historyList');
       if (records.length === 0) {
         container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
@@ -643,9 +697,10 @@
           const isFever = parseFloat(item.temp) >= 37.5;
           const d = new Date(item.time);
           const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          const wIcon = item.weather || '☀️';
           return `
             <div class="history-item">
-              <span class="time-val">${dateStr}</span>
+              <span class="time-val">${wIcon} ${dateStr}</span>
               <div style="display:flex; align-items:center; gap:10px;">
                 <span class="temp-val ${isFever ? 'fever' : ''}">${item.temp}°C</span>
                 <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
@@ -655,7 +710,6 @@
         }).join('');
       }
 
-      // メモ一覧
       const memoContainer = document.getElementById('memoList');
       if (memos.length === 0) {
         memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">メモはありません</div>';
@@ -679,14 +733,13 @@
       renderCalendar();
     }
 
-    // エスケープ処理
     function escapeHtml(str) {
       return str.replace(/[&<>"']/g, function(m) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
       });
     }
 
-    // Chart.js 描画
+    // Chart.js 描画（1本線＋時間帯別ドット色分け）
     function renderChart(records) {
       const ctx = document.getElementById('tempChart').getContext('2d');
       const sorted = [...records].reverse();
@@ -695,6 +748,17 @@
         return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
       });
       const dataValues = sorted.map(r => r.temp);
+
+      const pointColors = sorted.map(r => {
+        const h = new Date(r.time).getHours();
+        if (h >= 7 && h <= 11) {
+          return '#4ea8de'; // 朝：水色
+        } else if (h >= 12 && h <= 18) {
+          return '#f4a261'; // 昼：オレンジ
+        } else {
+          return '#1d3557'; // 夜：濃い青
+        }
+      });
 
       if (tempChart) {
         tempChart.destroy();
@@ -712,8 +776,10 @@
             borderWidth: 2,
             fill: true,
             tension: 0.3,
-            pointBackgroundColor: '#e88a91',
-            pointRadius: 4
+            pointBackgroundColor: pointColors,
+            pointBorderColor: pointColors,
+            pointRadius: 6,
+            pointHoverRadius: 8
           }]
         },
         options: {
@@ -736,14 +802,12 @@
       });
     }
 
-    // データの変更検知
     window.addEventListener('storage', function(e) {
       if (e.key === 'body_temp_data' || e.key === 'body_temp_memos' || e.key === 'body_temp_poop') {
         updateUI();
       }
     });
 
-    // 初期起動
     initPastDateTime();
     updateUI();
   </script>
