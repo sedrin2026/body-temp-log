@@ -256,15 +256,18 @@
     .cal-cell {
       background: #faf6f5;
       border-radius: 10px;
-      aspect-ratio: 1;
+      min-height: 52px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding: 4px 2px;
+      box-sizing: border-box;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       position: relative;
       border: 1px solid transparent;
+      overflow: hidden;
     }
     .cal-cell.empty {
       background: transparent;
@@ -276,9 +279,22 @@
       background: #fff0f1;
     }
     .cal-poop {
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       line-height: 1;
+      margin-top: 1px;
+    }
+    .cal-memo-text {
+      font-size: 0.6rem;
+      color: var(--text-main);
+      line-height: 1.1;
       margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      padding: 0 2px;
+      box-sizing: border-box;
+      font-weight: normal;
     }
 
     /* 下部スライドモーダル */
@@ -402,12 +418,12 @@
       <div id="memoList"></div>
     </div>
 
-    <!-- カレンダー（お通じ記録） -->
+    <!-- カレンダー（お通じ＆メモ記録） -->
     <div class="card">
-      <span class="section-title">お通じカレンダー 💩</span>
+      <span class="section-title">ヘルスログカレンダー 📅</span>
       <div class="calendar-header">
         <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前月</button>
-        <div id="calendarTitle" class="calendar-month">2026年 5月</div>
+        <div id="calendarTitle" class="calendar-month"></div>
         <button class="cal-nav-btn" onclick="changeMonth(1)">翌月 ＞</button>
       </div>
       <div class="calendar-grid" id="calendarGrid"></div>
@@ -528,7 +544,7 @@
       updateUI();
     }
 
-    // カレンダー描画
+    // カレンダー描画（メモ＆💩連動）
     function renderCalendar() {
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
@@ -545,7 +561,18 @@
       const firstDay = new Date(year, month, 1).getDay();
       const lastDate = new Date(year, month + 1, 0).getDate();
       const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       const today = new Date();
+
+      // 日付ごとのメモをマッピング
+      const memoMap = {};
+      memos.forEach(m => {
+        const d = new Date(m.time);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        if (!memoMap[key]) {
+          memoMap[key] = m.text;
+        }
+      });
 
       for (let i = 0; i < firstDay; i++) {
         grid.innerHTML += `<div class="cal-cell empty"></div>`;
@@ -555,11 +582,13 @@
         const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === date;
         const hasPoop = poopData[dateKey];
+        const dayMemo = memoMap[dateKey] || '';
 
         grid.innerHTML += `
           <div class="cal-cell ${isToday ? 'today' : ''}" onclick="openPoopModal('${dateKey}', ${month + 1}, ${date})">
             <span>${date}</span>
-            <span class="cal-poop">${hasPoop ? '💩' : ''}</span>
+            ${hasPoop ? '<span class="cal-poop">💩</span>' : ''}
+            ${dayMemo ? `<span class="cal-memo-text">${escapeHtml(dayMemo)}</span>` : ''}
           </div>
         `;
       }
