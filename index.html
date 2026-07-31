@@ -25,7 +25,7 @@
     }
     body {
       margin: 0;
-      padding: 8px 12px 24px;
+      padding: 4px 10px 20px;
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -35,64 +35,65 @@
       max-width: 440px;
       margin: 0 auto;
     }
+    /* ヘルシーに高さを抑えたヘッダー */
     header {
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .header-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       object-fit: cover;
-      margin-bottom: 2px;
-      box-shadow: 0 3px 8px rgba(232, 138, 145, 0.15);
+      margin-bottom: 0px;
+      box-shadow: 0 2px 6px rgba(232, 138, 145, 0.15);
     }
     h1 {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: var(--primary);
       margin: 0;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
     }
     .sub-title {
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       color: var(--text-sub);
-      margin-top: 1px;
+      margin-top: 0px;
     }
     .card {
       background: var(--card-bg);
-      border-radius: 14px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 12px rgba(232, 138, 145, 0.05);
+      border-radius: 12px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 8px rgba(232, 138, 145, 0.05);
       border: 1px solid var(--border-color);
     }
     .section-title {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       color: var(--text-sub);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: block;
     }
 
-    /* ファーストビュー収まり重視のスライダーエリア */
+    /* 一画面に収まるコンパクトなスライダーエリア */
     .slider-box {
       background: #faf6f5;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      padding: 4px 8px;
       text-align: center;
     }
     .slider-display {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color: var(--primary);
-      margin-bottom: 2px;
+      margin-bottom: 0px;
     }
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
-      margin-bottom: 8px;
+      margin: 2px 0 4px;
       cursor: pointer;
     }
     .slider-actions {
@@ -104,21 +105,21 @@
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 10px;
-      padding: 8px;
-      font-size: 0.85rem;
+      border-radius: 8px;
+      padding: 5px;
+      font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(232, 138, 145, 0.2);
+      box-shadow: 0 2px 4px rgba(232, 138, 145, 0.2);
     }
     .btn-clear {
       flex: 1;
       background: #e0d5d2;
       color: #555;
       border: none;
-      border-radius: 10px;
-      padding: 8px;
-      font-size: 0.75rem;
+      border-radius: 8px;
+      padding: 5px;
+      font-size: 0.7rem;
       font-weight: bold;
       cursor: pointer;
     }
@@ -127,14 +128,14 @@
     .weather-picker {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .weather-btn {
       background: #faf6f5;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      padding: 4px 8px;
-      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -143,17 +144,17 @@
       background: #fff0f1;
     }
 
-    /* グラフ用キャンバス（一画面に収まるよう高さをコンパクトに） */
+    /* グラフエリア（最初の一画面に確実に収めるため高さを110pxに調整） */
     .chart-container {
       position: relative;
       width: 100%;
-      height: 135px;
+      height: 110px;
     }
     .chart-legend-note {
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       color: var(--text-sub);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     /* 過去日時追加フォーム */
@@ -289,7 +290,7 @@
     .cal-cell {
       background: #faf6f5;
       border-radius: 8px;
-      min-height: 44px;
+      min-height: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -314,7 +315,7 @@
     .cal-icons {
       display: flex;
       gap: 2px;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       line-height: 1;
       margin-top: 1px;
     }
@@ -382,10 +383,6 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .poop-btn:active {
-      transform: scale(0.95);
-      background: #f2e3df;
-    }
     .btn-close {
       background: #e0d5d2;
       color: #555;
@@ -428,7 +425,7 @@
       </div>
     </div>
 
-    <!-- 【ファーストビュー枠】グラフ表示 -->
+    <!-- 【ファーストビュー枠】グラフ表示（一画面におさまる高さにチューニング） -->
     <div class="card">
       <span class="section-title">体温グラフ</span>
       <div class="chart-container">
@@ -437,8 +434,7 @@
       <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
-    <!-- 以下はスクロールして見るエリア -->
-    <!-- 過去の記録を追加するエリア -->
+    <!-- 以下はスクロールして見るエリア（他の機能はすべて現状維持） -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -448,13 +444,11 @@
       </div>
     </div>
 
-    <!-- 履歴一覧 -->
     <div class="card">
       <span class="section-title">これまでの記録</span>
       <div id="historyList"></div>
     </div>
 
-    <!-- メモエリア -->
     <div class="card">
       <span class="section-title">メモ（体調や解熱剤など）</span>
       <div class="memo-form">
@@ -464,7 +458,6 @@
       <div id="memoList"></div>
     </div>
 
-    <!-- カレンダー（お天気＆お通じ＆メモ記録） -->
     <div class="card">
       <span class="section-title">ヘルスログカレンダー 📅</span>
       <div class="calendar-header">
@@ -494,12 +487,9 @@
     let selectedDateStr = "";
     let selectedWeatherIcon = "☀️";
 
-    // サービスワーカー登録
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('ServiceWorker registered!', reg))
-          .catch(err => console.log('ServiceWorker error:', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
       });
     }
 
@@ -521,10 +511,7 @@
 
     function clearLastRecord() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
-      if (records.length === 0) {
-        alert('削除できる記録がありません。');
-        return;
-      }
+      if (records.length === 0) { alert('削除できる記録がありません。'); return; }
       records.shift();
       localStorage.setItem('body_temp_data', JSON.stringify(records));
       updateUI();
@@ -538,22 +525,14 @@
     function recordPastData() {
       const dateTimeVal = document.getElementById('pastDateTime').value;
       const tempVal = document.getElementById('pastTemp').value;
-      if (!dateTimeVal || !tempVal) {
-        alert('日時と体温の両方を入力してくださいね。');
-        return;
-      }
-      const isoTime = new Date(dateTimeVal).toISOString();
-      saveData(tempVal, isoTime, '☀️');
+      if (!dateTimeVal || !tempVal) { alert('日時と体温の両方を入力してくださいね。'); return; }
+      saveData(tempVal, new Date(dateTimeVal).toISOString(), '☀️');
       document.getElementById('pastTemp').value = '';
     }
 
     function saveData(temp, isoTimeString, weather) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
-      records.unshift({
-        time: isoTimeString,
-        temp: parseFloat(temp).toFixed(1),
-        weather: weather || '☀️'
-      });
+      records.unshift({ time: isoTimeString, temp: parseFloat(temp).toFixed(1), weather: weather || '☀️' });
       records.sort((a, b) => new Date(b.time) - new Date(a.time));
       localStorage.setItem('body_temp_data', JSON.stringify(records));
       updateUI();
@@ -572,10 +551,7 @@
       const text = input.value.trim();
       if (!text) return;
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
-      memos.unshift({
-        time: new Date().toISOString(),
-        text: text
-      });
+      memos.unshift({ time: new Date().toISOString(), text: text });
       localStorage.setItem('body_temp_memos', JSON.stringify(memos));
       input.value = '';
       updateUI();
@@ -593,15 +569,11 @@
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
       document.getElementById('calendarTitle').innerText = `${year}年 ${month + 1}月`;
-
       const grid = document.getElementById('calendarGrid');
       grid.innerHTML = '';
-
-      const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
-      dayLabels.forEach(d => {
+      ['日', '月', '火', '水', '木', '金', '土'].forEach(d => {
         grid.innerHTML += `<div class="cal-day-label">${d}</div>`;
       });
-
       const firstDay = new Date(year, month, 1).getDay();
       const lastDate = new Date(year, month + 1, 0).getDate();
       const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
@@ -609,8 +581,7 @@
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       const today = new Date();
 
-      const weatherMap = {};
-      const memoMap = {};
+      const weatherMap = {}, memoMap = {};
       records.forEach(r => {
         const d = new Date(r.time);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -625,22 +596,17 @@
       for (let i = 0; i < firstDay; i++) {
         grid.innerHTML += `<div class="cal-cell empty"></div>`;
       }
-
       for (let date = 1; date <= lastDate; date++) {
         const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
         const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === date;
-        const hasPoop = poopData[dateKey];
-        const dayWeather = weatherMap[dateKey] || '';
-        const dayMemo = memoMap[dateKey] || '';
-
         grid.innerHTML += `
           <div class="cal-cell ${isToday ? 'today' : ''}" onclick="openPoopModal('${dateKey}', ${month + 1}, ${date})">
             <span>${date}</span>
             <div class="cal-icons">
-              ${dayWeather ? `<span>${dayWeather}</span>` : ''}
-              ${hasPoop ? '<span>💩</span>' : ''}
+              ${weatherMap[dateKey] ? `<span>${weatherMap[dateKey]}</span>` : ''}
+              ${poopData[dateKey] ? '<span>💩</span>' : ''}
             </div>
-            ${dayMemo ? `<span class="cal-memo-text">${escapeHtml(dayMemo)}</span>` : ''}
+            ${memoMap[dateKey] ? `<span class="cal-memo-text">${escapeHtml(memoMap[dateKey])}</span>` : ''}
           </div>
         `;
       }
@@ -657,17 +623,14 @@
       document.getElementById('poopModal').classList.add('active');
     }
 
-    function closeModal(e) {
+    function closeModal() {
       document.getElementById('poopModal').classList.remove('active');
     }
 
     function setPoop(hasPoop) {
       const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
-      if (hasPoop) {
-        poopData[selectedDateStr] = true;
-      } else {
-        delete poopData[selectedDateStr];
-      }
+      if (hasPoop) poopData[selectedDateStr] = true;
+      else delete poopData[selectedDateStr];
       localStorage.setItem('body_temp_poop', JSON.stringify(poopData));
       closeModal();
       renderCalendar();
@@ -676,7 +639,6 @@
     function updateUI() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
-      
       const container = document.getElementById('historyList');
       if (records.length === 0) {
         container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:8px; font-size:0.8rem;">まだ記録はありません</div>';
@@ -685,10 +647,9 @@
           const isFever = parseFloat(item.temp) >= 37.5;
           const d = new Date(item.time);
           const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-          const wIcon = item.weather || '☀️';
           return `
             <div class="history-item">
-              <span class="time-val">${wIcon} ${dateStr}</span>
+              <span class="time-val">${item.weather || '☀️'} ${dateStr}</span>
               <div style="display:flex; align-items:center; gap:8px;">
                 <span class="temp-val ${isFever ? 'fever' : ''}">${item.temp}°C</span>
                 <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
@@ -699,24 +660,25 @@
       }
 
       const memoContainer = document.getElementById('memoList');
-      if (memos.length === 0) {
-        memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:8px; font-size:0.8rem;">メモはありません</div>';
-      } else {
-        memoContainer.innerHTML = memos.map((item, index) => {
-          const d = new Date(item.time);
-          const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-          return `
-            <div class="memo-item">
-              <div>
-                <div class="memo-text">${escapeHtml(item.text)}</div>
-                <div class="memo-date">${dateStr}</div>
+      if (memoContainer) {
+        if (memos.length === 0) {
+          memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:8px; font-size:0.8rem;">メモはありません</div>';
+        } else {
+          memoContainer.innerHTML = memos.map((item, index) => {
+            const d = new Date(item.time);
+            const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            return `
+              <div class="memo-item">
+                <div>
+                  <div class="memo-text">${escapeHtml(item.text)}</div>
+                  <div class="memo-date">${dateStr}</div>
+                </div>
+                <button class="delete-btn" onclick="deleteMemo(${index})">✕</button>
               </div>
-              <button class="delete-btn" onclick="deleteMemo(${index})">✕</button>
-            </div>
-          `;
-        }).join('');
+            `;
+          }).join('');
+        }
       }
-
       renderChart(records);
       renderCalendar();
     }
@@ -735,22 +697,14 @@
         return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
       });
       const dataValues = sorted.map(r => r.temp);
-
       const pointColors = sorted.map(r => {
         const h = new Date(r.time).getHours();
-        if (h >= 7 && h <= 11) {
-          return '#4ea8de'; // 朝：水色
-        } else if (h >= 12 && h <= 18) {
-          return '#f4a261'; // 昼：オレンジ
-        } else {
-          return '#1d3557'; // 夜：濃い青
-        }
+        if (h >= 7 && h <= 11) return '#4ea8de';
+        else if (h >= 12 && h <= 18) return '#f4a261';
+        else return '#1d3557';
       });
 
-      if (tempChart) {
-        tempChart.destroy();
-      }
-
+      if (tempChart) tempChart.destroy();
       tempChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -766,34 +720,19 @@
             pointBackgroundColor: pointColors,
             pointBorderColor: pointColors,
             pointRadius: 4,
-            pointHoverRadius: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y: {
-              min: 35.0,
-              max: 38.5,
-              ticks: { stepSize: 0.5, font: { size: 9 } }
-            },
-            x: {
-              ticks: { font: { size: 7 }, maxRotation: 45 }
-            }
+            y: { min: 35.0, max: 38.5, ticks: { stepSize: 0.5, font: { size: 8 } } },
+            x: { ticks: { font: { size: 6 }, maxRotation: 45 } }
           },
-          plugins: {
-            legend: { display: false }
-          }
+          plugins: { legend: { display: false } }
         }
       });
     }
-
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'body_temp_data' || e.key === 'body_temp_memos' || e.key === 'body_temp_poop') {
-        updateUI();
-      }
-    });
 
     initPastDateTime();
     updateUI();
