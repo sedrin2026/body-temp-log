@@ -10,7 +10,7 @@
   <link rel="icon" href="icon.png">
   
   <meta name="theme-color" content="#fff8f6">
-  <!-- ② CSS・JS等にバージョンパラメータを付与してキャッシュ保持を防ぐ -->
+  <!-- グラフ描画ライブラリ (Chart.js) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -386,6 +386,7 @@
       <div class="sub-title">スマート体温管理</div>
     </header>
 
+    <!-- ① 体温記録スライダーエリア -->
     <div class="card">
       <span class="section-title">体温をスライドして記録</span>
       <div class="slider-box">
@@ -406,6 +407,7 @@
       </div>
     </div>
 
+    <!-- ② 体温グラフエリア -->
     <div class="card">
       <span class="section-title">体温グラフ</span>
       <div class="chart-container">
@@ -414,6 +416,18 @@
       <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
+    <!-- ③ ヘルスログカレンダーエリア -->
+    <div class="card">
+      <span class="section-title">ヘルスログカレンダー 📅</span>
+      <div class="calendar-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前月</button>
+        <div id="calendarTitle" class="calendar-month"></div>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">翌月 ＞</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <!-- ④ 日時を指定して追加（あとから記録）エリア -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -423,11 +437,13 @@
       </div>
     </div>
 
+    <!-- ⑤ これまでの記録エリア -->
     <div class="card">
       <span class="section-title">これまでの記録</span>
       <div id="historyList"></div>
     </div>
 
+    <!-- ⑥ メモエリア -->
     <div class="card">
       <span class="section-title">メモ（体調や解熱剤など）</span>
       <div class="memo-form">
@@ -435,16 +451,6 @@
         <button class="btn-sub" style="margin-top:0; padding:8px 14px;" onclick="addMemo()">残す</button>
       </div>
       <div id="memoList"></div>
-    </div>
-
-    <div class="card">
-      <span class="section-title">ヘルスログカレンダー 📅</span>
-      <div class="calendar-header">
-        <button class="cal-nav-btn" onclick="changeMonth(-1)">＜ 前月</button>
-        <div id="calendarTitle" class="calendar-month"></div>
-        <button class="cal-nav-btn" onclick="changeMonth(1)">翌月 ＞</button>
-      </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
     </div>
   </div>
 
@@ -467,7 +473,6 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // ③ 通常ブラウザでもキャッシュが残りづらく、自動更新されるよう登録処理を最適化
         navigator.serviceWorker.register('./sw.js?v=20260801').then(registration => {
           registration.onupdatefound = () => {
             const installingWorker = registration.installing;
