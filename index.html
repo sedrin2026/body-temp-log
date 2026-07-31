@@ -25,7 +25,7 @@
     }
     body {
       margin: 0;
-      padding: 2px 8px 16px;
+      padding: 2px 8px 12px;
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -35,17 +35,26 @@
       max-width: 440px;
       margin: 0 auto;
     }
+    /* ヘッダーのコンパクト化と横並び配置 */
     header {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 2px;
+      padding: 0 2px;
     }
     .header-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       object-fit: cover;
-      margin-bottom: 0px;
       box-shadow: 0 2px 4px rgba(232, 138, 145, 0.15);
+      flex-shrink: 0;
+    }
+    .header-text-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     h1 {
       font-size: 0.9rem;
@@ -53,17 +62,19 @@
       color: var(--primary);
       margin: 0;
       letter-spacing: 1px;
+      line-height: 1.2;
     }
     .sub-title {
-      font-size: 0.5rem;
+      font-size: 0.55rem;
       color: var(--text-sub);
-      margin-top: 0px;
+      margin-top: 1px;
+      line-height: 1.1;
     }
     .card {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 4px 8px;
-      margin-bottom: 4px;
+      padding: 3px 8px;
+      margin-bottom: 3px;
       box-shadow: 0 2px 8px rgba(232, 138, 145, 0.05);
       border: 1px solid var(--border-color);
     }
@@ -78,11 +89,11 @@
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 3px 6px;
+      padding: 2px 6px;
       text-align: center;
     }
     .slider-display {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: bold;
       color: var(--primary);
       margin-bottom: 0px;
@@ -90,7 +101,7 @@
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
-      margin: 1px 0 3px;
+      margin: 1px 0 2px;
       cursor: pointer;
     }
     .slider-actions {
@@ -103,7 +114,7 @@
       color: white;
       border: none;
       border-radius: 8px;
-      padding: 4px;
+      padding: 3px;
       font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
@@ -115,7 +126,7 @@
       color: #555;
       border: none;
       border-radius: 8px;
-      padding: 4px;
+      padding: 3px;
       font-size: 0.65rem;
       font-weight: bold;
       cursor: pointer;
@@ -123,7 +134,7 @@
     .weather-picker {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .weather-btn {
       background: #faf6f5;
@@ -141,7 +152,7 @@
     .chart-container {
       position: relative;
       width: 100%;
-      height: 100px;
+      height: 90px;
     }
     .chart-legend-note {
       font-size: 0.5rem;
@@ -244,46 +255,46 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .calendar-month {
       font-weight: bold;
       color: var(--primary);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     .cal-nav-btn {
       background: #faf6f5;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 4px 8px;
-      font-size: 0.75rem;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
       cursor: pointer;
       color: var(--text-main);
     }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 3px;
+      gap: 2px;
       text-align: center;
     }
     .cal-day-label {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--text-sub);
-      padding-bottom: 2px;
+      padding-bottom: 1px;
       font-weight: bold;
     }
     .cal-cell {
       background: #faf6f5;
-      border-radius: 8px;
-      min-height: 40px;
+      border-radius: 6px;
+      min-height: 35px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 2px;
+      padding: 1px;
       box-sizing: border-box;
       cursor: pointer;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       position: relative;
       border: 1px solid transparent;
       overflow: hidden;
@@ -299,15 +310,15 @@
     }
     .cal-icons {
       display: flex;
-      gap: 2px;
-      font-size: 0.6rem;
+      gap: 1px;
+      font-size: 0.55rem;
       line-height: 1;
       margin-top: 1px;
     }
     .cal-memo-text {
-      font-size: 0.5rem;
+      font-size: 0.45rem;
       color: var(--text-main);
-      line-height: 1.1;
+      line-height: 1;
       margin-top: 1px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -382,8 +393,10 @@
   <div class="container">
     <header>
       <img src="icon.png" alt="YUKINO HEALTH LOG" class="header-icon">
-      <h1>YUKINO HEALTH LOG</h1>
-      <div class="sub-title">スマート体温管理</div>
+      <div class="header-text-group">
+        <h1>YUKINO HEALTH LOG</h1>
+        <div class="sub-title">スマート体温管理 Ver2</div>
+      </div>
     </header>
 
     <!-- ① 体温記録スライダーエリア -->
