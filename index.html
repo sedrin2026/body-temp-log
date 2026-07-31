@@ -429,7 +429,16 @@
       </div>
     </div>
 
-    <!-- 過去の記録を追加するエリア -->
+    <!-- グラフ表示（スライダーのすぐ下に移動） -->
+    <div class="card">
+      <span class="section-title">体温グラフ</span>
+      <div class="chart-container">
+        <canvas id="tempChart"></canvas>
+      </div>
+      <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
+    </div>
+
+    <!-- 過去の記録を追加するエリア（グラフの下に移動） -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -437,15 +446,6 @@
         <input type="number" id="pastTemp" step="0.1" min="34.0" max="42.0" placeholder="体温 (例: 36.6)" class="past-input">
         <button class="btn-sub" onclick="recordPastData()">指定した日時で追加する</button>
       </div>
-    </div>
-
-    <!-- グラフ表示 -->
-    <div class="card">
-      <span class="section-title">体温グラフ</span>
-      <div class="chart-container">
-        <canvas id="tempChart"></canvas>
-      </div>
-      <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
     <!-- 履歴一覧 -->
