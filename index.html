@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YUKINO HEALTH LOG</title>
   
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=20260801">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="icon" href="icon.png">
   
   <meta name="theme-color" content="#fff8f6">
-  <!-- グラフ描画ライブラリ (Chart.js) -->
+  <!-- ② CSS・JS等にバージョンパラメータを付与してキャッシュ保持を防ぐ -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -25,7 +25,6 @@
     }
     body {
       margin: 0;
-      /* 縦方向の余白を必要最小限に圧縮して一画面に収める */
       padding: 2px 8px 16px;
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
@@ -36,7 +35,6 @@
       max-width: 440px;
       margin: 0 auto;
     }
-    /* ヘッダー周辺の縦スペースを最適化 */
     header {
       text-align: center;
       margin-bottom: 2px;
@@ -61,7 +59,6 @@
       color: var(--text-sub);
       margin-top: 0px;
     }
-    /* カード間の上下余白をコンパクト化 */
     .card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -77,8 +74,6 @@
       margin-bottom: 2px;
       display: block;
     }
-
-    /* スライダーエリアの内部余白を最適化 */
     .slider-box {
       background: #faf6f5;
       border: 1px solid var(--border-color);
@@ -125,8 +120,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
-    /* お天気選択ボタン */
     .weather-picker {
       display: flex;
       justify-content: space-around;
@@ -145,8 +138,6 @@
       border-color: var(--primary);
       background: #fff0f1;
     }
-
-    /* グラフの高さを100pxに微調整して確実一画面化 */
     .chart-container {
       position: relative;
       width: 100%;
@@ -158,8 +149,6 @@
       text-align: center;
       margin-top: 1px;
     }
-
-    /* 過去日時追加フォーム */
     .past-form-group {
       display: flex;
       flex-direction: column;
@@ -185,8 +174,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
-    /* 履歴と削除 */
     .history-item {
       display: flex;
       justify-content: space-between;
@@ -217,8 +204,6 @@
       font-size: 0.85rem;
       cursor: pointer;
     }
-
-    /* メモ入力エリア */
     .memo-form {
       display: flex;
       gap: 8px;
@@ -255,8 +240,6 @@
       color: var(--text-sub);
       margin-top: 2px;
     }
-
-    /* カレンダーエリア */
     .calendar-header {
       display: flex;
       justify-content: space-between;
@@ -334,8 +317,6 @@
       box-sizing: border-box;
       font-weight: normal;
     }
-
-    /* 下部スライドモーダル */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -405,14 +386,12 @@
       <div class="sub-title">スマート体温管理</div>
     </header>
 
-    <!-- 【ファーストビュー枠】スライダー選択エリア -->
     <div class="card">
       <span class="section-title">体温をスライドして記録</span>
       <div class="slider-box">
         <div id="sliderDisplay" class="slider-display">36.5°C</div>
         <input type="range" id="tempSlider" min="34.0" max="42.0" step="0.1" value="36.5" oninput="updateSliderText(this.value)">
         
-        <!-- お天気選択 -->
         <div class="weather-picker">
           <button type="button" class="weather-btn selected" onclick="selectWeather('☀️', this)">☀️</button>
           <button type="button" class="weather-btn" onclick="selectWeather('☁️', this)">☁️</button>
@@ -427,7 +406,6 @@
       </div>
     </div>
 
-    <!-- 【ファーストビュー枠】グラフ表示（一画面におさまる高さに最適化） -->
     <div class="card">
       <span class="section-title">体温グラフ</span>
       <div class="chart-container">
@@ -436,7 +414,6 @@
       <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
-    <!-- 以下はスクロールして見るエリア（機能・デザインは完全にそのまま維持） -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -471,7 +448,6 @@
     </div>
   </div>
 
-  <!-- 下から出るモーダル（💩選択） -->
   <div class="modal-overlay" id="poopModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-title" id="modalDateTitle">5月15日の記録</div>
@@ -491,7 +467,19 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+        // ③ 通常ブラウザでもキャッシュが残りづらく、自動更新されるよう登録処理を最適化
+        navigator.serviceWorker.register('./sw.js?v=20260801').then(registration => {
+          registration.onupdatefound = () => {
+            const installingWorker = registration.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  console.log('新しいコンテンツが利用可能です。リロードしてください。');
+                }
+              }
+            };
+          };
+        }).catch(err => console.log('SW error:', err));
       });
     }
 
