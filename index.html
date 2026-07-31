@@ -25,7 +25,7 @@
     }
     body {
       margin: 0;
-      padding: 20px 16px 40px;
+      padding: 8px 12px 24px;
       font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -37,88 +37,88 @@
     }
     header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 8px;
     }
     .header-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       object-fit: cover;
-      margin-bottom: 8px;
-      box-shadow: 0 4px 12px rgba(232, 138, 145, 0.15);
+      margin-bottom: 2px;
+      box-shadow: 0 3px 8px rgba(232, 138, 145, 0.15);
     }
     h1 {
-      font-size: 1.3rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: var(--primary);
       margin: 0;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
     }
     .sub-title {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       color: var(--text-sub);
-      margin-top: 4px;
+      margin-top: 1px;
     }
     .card {
       background: var(--card-bg);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 20px rgba(232, 138, 145, 0.08);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(232, 138, 145, 0.05);
       border: 1px solid var(--border-color);
     }
     .section-title {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: var(--text-sub);
-      margin-bottom: 12px;
+      margin-bottom: 6px;
       display: block;
     }
 
-    /* スライダーエリア */
+    /* ファーストビュー収まり重視のスライダーエリア */
     .slider-box {
       background: #faf6f5;
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 16px;
+      border-radius: 10px;
+      padding: 8px 10px;
       text-align: center;
     }
     .slider-display {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
       color: var(--primary);
-      margin-bottom: 10px;
+      margin-bottom: 2px;
     }
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       cursor: pointer;
     }
     .slider-actions {
       display: flex;
-      gap: 10px;
+      gap: 6px;
     }
     .btn-main {
       flex: 2;
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 1rem;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(232, 138, 145, 0.2);
+      box-shadow: 0 2px 6px rgba(232, 138, 145, 0.2);
     }
     .btn-clear {
       flex: 1;
       background: #e0d5d2;
       color: #555;
       border: none;
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
     }
@@ -127,14 +127,14 @@
     .weather-picker {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .weather-btn {
       background: #faf6f5;
       border: 2px solid var(--border-color);
-      border-radius: 12px;
-      padding: 8px 12px;
-      font-size: 1.2rem;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -143,18 +143,31 @@
       background: #fff0f1;
     }
 
+    /* グラフ用キャンバス（一画面に収まるよう高さをコンパクトに） */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 135px;
+    }
+    .chart-legend-note {
+      font-size: 0.6rem;
+      color: var(--text-sub);
+      text-align: center;
+      margin-top: 4px;
+    }
+
     /* 過去日時追加フォーム */
     .past-form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .past-input {
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.9rem;
+      padding: 8px 10px;
+      font-size: 0.85rem;
       color: var(--text-main);
       width: 100%;
       box-sizing: border-box;
@@ -163,12 +176,11 @@
       background: #f2e3df;
       color: var(--text-main);
       border: none;
-      border-radius: 12px;
-      padding: 10px;
-      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 4px;
     }
 
     /* 履歴と削除 */
@@ -176,14 +188,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 1px dotted var(--border-color);
     }
     .history-item:last-child {
       border-bottom: none;
     }
     .temp-val {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
       color: var(--primary);
     }
@@ -191,7 +203,7 @@
       color: var(--accent-fever);
     }
     .time-val {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-sub);
     }
     .delete-btn {
@@ -199,7 +211,7 @@
       border: none;
       color: #ccc;
       padding: 4px 8px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
@@ -207,15 +219,15 @@
     .memo-form {
       display: flex;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .memo-input {
       flex: 1;
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.9rem;
+      padding: 8px 10px;
+      font-size: 0.85rem;
       color: var(--text-main);
       box-sizing: border-box;
     }
@@ -223,35 +235,22 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 1px dotted var(--border-color);
     }
     .memo-item:last-child {
       border-bottom: none;
     }
     .memo-text {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-main);
       word-break: break-all;
       white-space: pre-wrap;
     }
     .memo-date {
-      font-size: 0.75rem;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
-
-    /* グラフ用キャンバス */
-    .chart-container {
-      position: relative;
-      width: 100%;
-      height: 220px;
-    }
-    .chart-legend-note {
       font-size: 0.7rem;
       color: var(--text-sub);
-      text-align: center;
-      margin-top: 8px;
+      margin-top: 2px;
     }
 
     /* カレンダーエリア */
@@ -259,46 +258,46 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .calendar-month {
       font-weight: bold;
       color: var(--primary);
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
     .cal-nav-btn {
       background: #faf6f5;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
+      padding: 4px 8px;
+      font-size: 0.75rem;
       cursor: pointer;
       color: var(--text-main);
     }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
+      gap: 3px;
       text-align: center;
     }
     .cal-day-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-sub);
-      padding-bottom: 6px;
+      padding-bottom: 2px;
       font-weight: bold;
     }
     .cal-cell {
       background: #faf6f5;
-      border-radius: 10px;
-      min-height: 56px;
+      border-radius: 8px;
+      min-height: 44px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 4px 2px;
+      padding: 2px;
       box-sizing: border-box;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       position: relative;
       border: 1px solid transparent;
       overflow: hidden;
@@ -315,20 +314,20 @@
     .cal-icons {
       display: flex;
       gap: 2px;
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       line-height: 1;
       margin-top: 1px;
     }
     .cal-memo-text {
-      font-size: 0.6rem;
+      font-size: 0.5rem;
       color: var(--text-main);
       line-height: 1.1;
-      margin-top: 2px;
+      margin-top: 1px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
-      padding: 0 2px;
+      padding: 0 1px;
       box-sizing: border-box;
       font-weight: normal;
     }
@@ -353,7 +352,7 @@
       background: #ffffff;
       width: 100%;
       border-radius: 24px 24px 0 0;
-      padding: 24px 20px 32px;
+      padding: 20px 20px 28px;
       box-sizing: border-box;
       transform: translateY(100%);
       transition: transform 0.3s ease;
@@ -363,23 +362,23 @@
       transform: translateY(0);
     }
     .modal-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       color: var(--text-main);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .poop-options {
       display: flex;
       justify-content: center;
       gap: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .poop-btn {
       background: #faf6f5;
       border: 2px solid var(--border-color);
       border-radius: 16px;
-      padding: 12px 20px;
-      font-size: 1.8rem;
+      padding: 10px 18px;
+      font-size: 1.6rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -392,8 +391,8 @@
       color: #555;
       border: none;
       border-radius: 12px;
-      padding: 10px 24px;
-      font-size: 0.9rem;
+      padding: 8px 22px;
+      font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
     }
@@ -407,7 +406,7 @@
       <div class="sub-title">スマート体温管理</div>
     </header>
 
-    <!-- スライダー選択エリア -->
+    <!-- 【ファーストビュー枠】スライダー選択エリア -->
     <div class="card">
       <span class="section-title">体温をスライドして記録</span>
       <div class="slider-box">
@@ -429,7 +428,7 @@
       </div>
     </div>
 
-    <!-- グラフ表示（スライダーのすぐ下に移動） -->
+    <!-- 【ファーストビュー枠】グラフ表示 -->
     <div class="card">
       <span class="section-title">体温グラフ</span>
       <div class="chart-container">
@@ -438,7 +437,8 @@
       <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
     </div>
 
-    <!-- 過去の記録を追加するエリア（グラフの下に移動） -->
+    <!-- 以下はスクロールして見るエリア -->
+    <!-- 過去の記録を追加するエリア -->
     <div class="card">
       <span class="section-title">日時を指定して追加（あとから記録）</span>
       <div class="past-form-group">
@@ -459,7 +459,7 @@
       <span class="section-title">メモ（体調や解熱剤など）</span>
       <div class="memo-form">
         <input type="text" id="memoText" class="memo-input" placeholder="例: 解熱剤を飲んだ、頭痛あり">
-        <button class="btn-sub" style="margin-top:0; padding:10px 16px;" onclick="addMemo()">残す</button>
+        <button class="btn-sub" style="margin-top:0; padding:8px 14px;" onclick="addMemo()">残す</button>
       </div>
       <div id="memoList"></div>
     </div>
@@ -482,7 +482,7 @@
       <div class="modal-title" id="modalDateTitle">5月15日の記録</div>
       <div class="poop-options">
         <button class="poop-btn" onclick="setPoop(true)">💩</button>
-        <button class="poop-btn" style="font-size:1rem; padding:16px;" onclick="setPoop(false)">なし</button>
+        <button class="poop-btn" style="font-size:1rem; padding:14px;" onclick="setPoop(false)">なし</button>
       </div>
       <button class="btn-close" onclick="closeModal()">閉じる</button>
     </div>
@@ -494,7 +494,7 @@
     let selectedDateStr = "";
     let selectedWeatherIcon = "☀️";
 
-    // サービスワーカー（オフライン対応）の登録
+    // サービスワーカー登録
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -503,26 +503,22 @@
       });
     }
 
-    // 初期化時に過去日時フォームに現在日時をセット
     function initPastDateTime() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       document.getElementById('pastDateTime').value = now.toISOString().slice(0, 16);
     }
 
-    // スライダーの文字連動
     function updateSliderText(val) {
       document.getElementById('sliderDisplay').innerText = parseFloat(val).toFixed(1) + '°C';
     }
 
-    // お天気選択
     function selectWeather(weather, btn) {
       selectedWeatherIcon = weather;
       document.querySelectorAll('.weather-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
     }
 
-    // クリアボタン：直近（一番新しい）の記録を1件削除
     function clearLastRecord() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       if (records.length === 0) {
@@ -534,13 +530,11 @@
       updateUI();
     }
 
-    // スライダーからの記録
     function recordSlider() {
       const temp = document.getElementById('tempSlider').value;
       saveData(temp, new Date().toISOString(), selectedWeatherIcon);
     }
 
-    // 過去日時を指定しての記録
     function recordPastData() {
       const dateTimeVal = document.getElementById('pastDateTime').value;
       const tempVal = document.getElementById('pastTemp').value;
@@ -553,7 +547,6 @@
       document.getElementById('pastTemp').value = '';
     }
 
-    // 共通のデータ保存処理
     function saveData(temp, isoTimeString, weather) {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       records.unshift({
@@ -566,7 +559,6 @@
       updateUI();
     }
 
-    // 個別削除処理
     function deleteRecord(index) {
       if (!confirm('この記録を消してもよろしいですか？')) return;
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
@@ -575,7 +567,6 @@
       updateUI();
     }
 
-    // メモ追加
     function addMemo() {
       const input = document.getElementById('memoText');
       const text = input.value.trim();
@@ -590,7 +581,6 @@
       updateUI();
     }
 
-    // メモ削除
     function deleteMemo(index) {
       if (!confirm('このメモを消してもよろしいですか？')) return;
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
@@ -599,7 +589,6 @@
       updateUI();
     }
 
-    // カレンダー描画
     function renderCalendar() {
       const year = currentCalDate.getFullYear();
       const month = currentCalDate.getMonth();
@@ -684,14 +673,13 @@
       renderCalendar();
     }
 
-    // UI & グラフの更新
     function updateUI() {
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       
       const container = document.getElementById('historyList');
       if (records.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">まだ記録はありません</div>';
+        container.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:8px; font-size:0.8rem;">まだ記録はありません</div>';
       } else {
         container.innerHTML = records.map((item, index) => {
           const isFever = parseFloat(item.temp) >= 37.5;
@@ -701,7 +689,7 @@
           return `
             <div class="history-item">
               <span class="time-val">${wIcon} ${dateStr}</span>
-              <div style="display:flex; align-items:center; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
                 <span class="temp-val ${isFever ? 'fever' : ''}">${item.temp}°C</span>
                 <button class="delete-btn" onclick="deleteRecord(${index})">✕</button>
               </div>
@@ -712,7 +700,7 @@
 
       const memoContainer = document.getElementById('memoList');
       if (memos.length === 0) {
-        memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:12px; font-size:0.85rem;">メモはありません</div>';
+        memoContainer.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:8px; font-size:0.8rem;">メモはありません</div>';
       } else {
         memoContainer.innerHTML = memos.map((item, index) => {
           const d = new Date(item.time);
@@ -739,7 +727,6 @@
       });
     }
 
-    // Chart.js 描画（1本線＋時間帯別ドット色分け）
     function renderChart(records) {
       const ctx = document.getElementById('tempChart').getContext('2d');
       const sorted = [...records].reverse();
@@ -778,8 +765,8 @@
             tension: 0.3,
             pointBackgroundColor: pointColors,
             pointBorderColor: pointColors,
-            pointRadius: 6,
-            pointHoverRadius: 8
+            pointRadius: 4,
+            pointHoverRadius: 6
           }]
         },
         options: {
@@ -789,10 +776,10 @@
             y: {
               min: 35.0,
               max: 38.5,
-              ticks: { stepSize: 0.5 }
+              ticks: { stepSize: 0.5, font: { size: 9 } }
             },
             x: {
-              ticks: { font: { size: 9 }, maxRotation: 45 }
+              ticks: { font: { size: 7 }, maxRotation: 45 }
             }
           },
           plugins: {
