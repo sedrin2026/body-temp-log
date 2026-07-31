@@ -1,29 +1,32 @@
-const CACHE_NAME = 'yukino-health-v2';
+// ① CACHE_NAME を更新（バージョン管理）
+const CACHE_NAME = 'body-temp-log-v20260801-2';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon.png',
-  'https://cdn.jsdelivr.net/npm/chart.js'
+  './icon.png'
 ];
 
-// インストール時に全ファイルをキャッシュ
+// インストール時に新キャッシュを保存し、即時待機状態をスキップ
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
       .then(() => self.skipWaiting())
   );
 });
 
-// 有効化時に古いキャッシュを削除
+// ③ 古いキャッシュの自動削除と、通常ブラウザでの即時反映制御
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('古いキャッシュを削除します:', cacheName);
+            return caches.delete(cacheName);
           }
         })
       );
@@ -31,12 +34,17 @@ self.addEventListener('activate', event => {
   );
 });
 
-// オフライン時でもキャッシュから返す
+// フェッチ時にネットワーク優先、またはキャッシュフォールバックで常に最新を狙う最適化
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        return response || fetch(event.request);
+        // ネットワークから正常に取得できた場合はそのまま返す（必要に応じてキャッシュ更新も可能）
+        return response;
+      })
+      .catch(() => {
+        // オフライン時はキャッシュから返す
+        return caches.match(event.request);
       })
   );
 });
