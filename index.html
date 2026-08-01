@@ -436,11 +436,11 @@
 
     <!-- ② 体温グラフエリア -->
     <div class="card">
-      <span class="section-title">体温グラフ ＆ ヘルスログ</span>
+      <span class="section-title">体温グラフ</span>
       <div class="chart-container">
         <canvas id="tempChart"></canvas>
       </div>
-      <div class="chart-legend-note">🌡️体温 ｜ 💩排便(茶) ｜ 🩸出血(赤) ｜ ⚡頭痛(青)</div>
+      <div class="chart-legend-note">𖠚 朝 (7-11時) ｜ ♥ 昼 (12-18時) ｜ 𖤘 夜 (19-6時)</div>
     </div>
 
     <!-- ③ ヘルスログカレンダーエリア -->
@@ -757,29 +757,6 @@
         else return '#1d3557';
       });
 
-      // 日付ベースの排便・出血・頭痛データを構築
-      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
-      const bleedData = JSON.parse(localStorage.getItem('body_temp_bleed') || '{}');
-      const headacheData = JSON.parse(localStorage.getItem('body_temp_headache') || '{}');
-
-      const poopValues = sorted.map(r => {
-        const d = new Date(r.time);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        return poopData[key] ? 35.5 : null; // グラフ下部に表示する固定ライン値
-      });
-
-      const bleedValues = sorted.map(r => {
-        const d = new Date(r.time);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        return bleedData[key] ? 35.3 : null;
-      });
-
-      const headacheValues = sorted.map(r => {
-        const d = new Date(r.time);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        return headacheData[key] ? 35.1 : null;
-      });
-
       if (tempChart) tempChart.destroy();
       tempChart = new Chart(ctx, {
         type: 'line',
@@ -797,36 +774,6 @@
               pointBackgroundColor: pointColors,
               pointBorderColor: pointColors,
               pointRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              label: '排便 (💩)',
-              data: poopValues,
-              borderColor: '#8d5524',
-              backgroundColor: '#8d5524',
-              pointRadius: 6,
-              pointStyle: 'rectRot',
-              showLine: false,
-              yAxisID: 'y'
-            },
-            {
-              label: '出血 (🩸)',
-              data: bleedValues,
-              borderColor: '#d90429',
-              backgroundColor: '#d90429',
-              pointRadius: 6,
-              pointStyle: 'triangle',
-              showLine: false,
-              yAxisID: 'y'
-            },
-            {
-              label: '頭痛 (⚡)',
-              data: headacheValues,
-              borderColor: '#0077b6',
-              backgroundColor: '#0077b6',
-              pointRadius: 6,
-              pointStyle: 'circle',
-              showLine: false,
               yAxisID: 'y'
             }
           ]
