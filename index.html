@@ -107,8 +107,6 @@
       display: flex;
       gap: 6px;
     }
-    
-    /* ── 2つのボタンに対する押下時（タップ中）のアニメーション・色変化の追加 ── */
     .btn-main {
       flex: 2;
       background: var(--primary);
@@ -123,10 +121,9 @@
       transition: background-color 0.1s ease, transform 0.1s ease;
     }
     .btn-main:active {
-      background-color: #c96b73; /* 押した瞬間に少し濃く（暗く）変化 */
-      transform: scale(0.98);    /* ほんの少し沈み込むようなフィードバック */
+      background-color: #c96b73;
+      transform: scale(0.98);
     }
-
     .btn-clear {
       flex: 1;
       background: #e0d5d2;
@@ -140,11 +137,9 @@
       transition: background-color 0.1s ease, transform 0.1s ease;
     }
     .btn-clear:active {
-      background-color: #c5b8b5; /* 押した瞬間に少し濃く変化 */
-      transform: scale(0.98);    /* ほんの少し沈み込むようなフィードバック */
+      background-color: #c5b8b5;
+      transform: scale(0.98);
     }
-    /* ──────────────────────────────────────────────────────────── */
-
     .weather-picker {
       display: flex;
       justify-content: space-around;
@@ -166,13 +161,14 @@
     .chart-container {
       position: relative;
       width: 100%;
-      height: 90px;
+      height: 110px;
     }
     .chart-legend-note {
-      font-size: 0.5rem;
+      font-size: 0.48rem;
       color: var(--text-sub);
       text-align: center;
       margin-top: 1px;
+      line-height: 1.2;
     }
     .past-form-group {
       display: flex;
@@ -376,20 +372,24 @@
       color: var(--text-main);
       margin-bottom: 14px;
     }
-    .poop-options {
+    .log-options {
       display: flex;
       justify-content: center;
-      gap: 16px;
+      gap: 10px;
       margin-bottom: 18px;
     }
-    .poop-btn {
+    .log-btn {
       background: #faf6f5;
       border: 2px solid var(--border-color);
-      border-radius: 16px;
-      padding: 10px 18px;
-      font-size: 1.6rem;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 1.4rem;
       cursor: pointer;
       transition: all 0.2s;
+    }
+    .log-btn.selected {
+      border-color: var(--primary);
+      background: #fff0f1;
     }
     .btn-close {
       background: #e0d5d2;
@@ -436,11 +436,11 @@
 
     <!-- ② 体温グラフエリア -->
     <div class="card">
-      <span class="section-title">体温グラフ</span>
+      <span class="section-title">体温グラフ ＆ ヘルスログ</span>
       <div class="chart-container">
         <canvas id="tempChart"></canvas>
       </div>
-      <div class="chart-legend-note">🩵 朝 (7-11時) ｜ 🧡 昼 (12-18時) ｜ 💙 夜 (19-6時)</div>
+      <div class="chart-legend-note">🌡️体温 ｜ 💩排便(茶) ｜ 🩸出血(赤) ｜ ⚡頭痛(青)</div>
     </div>
 
     <!-- ③ ヘルスログカレンダーエリア -->
@@ -481,12 +481,14 @@
     </div>
   </div>
 
+  <!-- ログ選択モーダル -->
   <div class="modal-overlay" id="poopModal" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-title" id="modalDateTitle">5月15日の記録</div>
-      <div class="poop-options">
-        <button class="poop-btn" onclick="setPoop(true)">💩</button>
-        <button class="poop-btn" style="font-size:1rem; padding:14px;" onclick="setPoop(false)">なし</button>
+      <div class="log-options">
+        <button class="log-btn" id="btnPoop" onclick="toggleLogType('poop')">💩</button>
+        <button class="log-btn" id="btnBleed" onclick="toggleLogType('bleed')">🩸</button>
+        <button class="log-btn" id="btnHeadache" onclick="toggleLogType('headache')">⚡</button>
       </div>
       <button class="btn-close" onclick="closeModal()">閉じる</button>
     </div>
@@ -598,7 +600,10 @@
       });
       const firstDay = new Date(year, month, 1).getDay();
       const lastDate = new Date(year, month + 1, 0).getDate();
+      
       const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const bleedData = JSON.parse(localStorage.getItem('body_temp_bleed') || '{}');
+      const headacheData = JSON.parse(localStorage.getItem('body_temp_headache') || '{}');
       const records = JSON.parse(localStorage.getItem('body_temp_data') || '[]');
       const memos = JSON.parse(localStorage.getItem('body_temp_memos') || '[]');
       const today = new Date();
@@ -627,6 +632,8 @@
             <div class="cal-icons">
               ${weatherMap[dateKey] ? `<span>${weatherMap[dateKey]}</span>` : ''}
               ${poopData[dateKey] ? '<span>💩</span>' : ''}
+              ${bleedData[dateKey] ? '<span>🩸</span>' : ''}
+              ${headacheData[dateKey] ? '<span>⚡</span>' : ''}
             </div>
             ${memoMap[dateKey] ? `<span class="cal-memo-text">${escapeHtml(memoMap[dateKey])}</span>` : ''}
           </div>
@@ -642,19 +649,43 @@
     function openPoopModal(dateKey, m, d) {
       selectedDateStr = dateKey;
       document.getElementById('modalDateTitle').innerText = `${m}月${d}日の記録`;
+      
+      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const bleedData = JSON.parse(localStorage.getItem('body_temp_bleed') || '{}');
+      const headacheData = JSON.parse(localStorage.getItem('body_temp_headache') || '{}');
+
+      document.getElementById('btnPoop').className = 'log-btn ' + (poopData[dateKey] ? 'selected' : '');
+      document.getElementById('btnBleed').className = 'log-btn ' + (bleedData[dateKey] ? 'selected' : '');
+      document.getElementById('btnHeadache').className = 'log-btn ' + (headacheData[dateKey] ? 'selected' : '');
+
       document.getElementById('poopModal').classList.add('active');
     }
 
     function closeModal() {
       document.getElementById('poopModal').classList.remove('active');
+      updateUI();
     }
 
-    function setPoop(hasPoop) {
-      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
-      if (hasPoop) poopData[selectedDateStr] = true;
-      else delete poopData[selectedDateStr];
-      localStorage.setItem('body_temp_poop', JSON.stringify(poopData));
-      closeModal();
+    function toggleLogType(type) {
+      if (type === 'poop') {
+        const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+        if (poopData[selectedDateStr]) delete poopData[selectedDateStr];
+        else poopData[selectedDateStr] = true;
+        localStorage.setItem('body_temp_poop', JSON.stringify(poopData));
+        document.getElementById('btnPoop').classList.toggle('selected');
+      } else if (type === 'bleed') {
+        const bleedData = JSON.parse(localStorage.getItem('body_temp_bleed') || '{}');
+        if (bleedData[selectedDateStr]) delete bleedData[selectedDateStr];
+        else bleedData[selectedDateStr] = true;
+        localStorage.setItem('body_temp_bleed', JSON.stringify(bleedData));
+        document.getElementById('btnBleed').classList.toggle('selected');
+      } else if (type === 'headache') {
+        const headacheData = JSON.parse(localStorage.getItem('body_temp_headache') || '{}');
+        if (headacheData[selectedDateStr]) delete headacheData[selectedDateStr];
+        else headacheData[selectedDateStr] = true;
+        localStorage.setItem('body_temp_headache', JSON.stringify(headacheData));
+        document.getElementById('btnHeadache').classList.toggle('selected');
+      }
       renderCalendar();
     }
 
@@ -726,23 +757,79 @@
         else return '#1d3557';
       });
 
+      // 日付ベースの排便・出血・頭痛データを構築
+      const poopData = JSON.parse(localStorage.getItem('body_temp_poop') || '{}');
+      const bleedData = JSON.parse(localStorage.getItem('body_temp_bleed') || '{}');
+      const headacheData = JSON.parse(localStorage.getItem('body_temp_headache') || '{}');
+
+      const poopValues = sorted.map(r => {
+        const d = new Date(r.time);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return poopData[key] ? 35.5 : null; // グラフ下部に表示する固定ライン値
+      });
+
+      const bleedValues = sorted.map(r => {
+        const d = new Date(r.time);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return bleedData[key] ? 35.3 : null;
+      });
+
+      const headacheValues = sorted.map(r => {
+        const d = new Date(r.time);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return headacheData[key] ? 35.1 : null;
+      });
+
       if (tempChart) tempChart.destroy();
       tempChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
-          datasets: [{
-            label: '体温 (°C)',
-            data: dataValues,
-            borderColor: '#e88a91',
-            backgroundColor: 'rgba(232, 138, 145, 0.15)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.3,
-            pointBackgroundColor: pointColors,
-            pointBorderColor: pointColors,
-            pointRadius: 4,
-          }]
+          datasets: [
+            {
+              label: '体温 (°C)',
+              data: dataValues,
+              borderColor: '#e88a91',
+              backgroundColor: 'rgba(232, 138, 145, 0.15)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: pointColors,
+              pointBorderColor: pointColors,
+              pointRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: '排便 (💩)',
+              data: poopValues,
+              borderColor: '#8d5524',
+              backgroundColor: '#8d5524',
+              pointRadius: 6,
+              pointStyle: 'rectRot',
+              showLine: false,
+              yAxisID: 'y'
+            },
+            {
+              label: '出血 (🩸)',
+              data: bleedValues,
+              borderColor: '#d90429',
+              backgroundColor: '#d90429',
+              pointRadius: 6,
+              pointStyle: 'triangle',
+              showLine: false,
+              yAxisID: 'y'
+            },
+            {
+              label: '頭痛 (⚡)',
+              data: headacheValues,
+              borderColor: '#0077b6',
+              backgroundColor: '#0077b6',
+              pointRadius: 6,
+              pointStyle: 'circle',
+              showLine: false,
+              yAxisID: 'y'
+            }
+          ]
         },
         options: {
           responsive: true,
